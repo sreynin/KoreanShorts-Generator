@@ -45,7 +45,7 @@ function wrapText(text, maxCharsPerLine) {
   return lines;
 }
 
-function makePageSvg(pageLines, width, height, fontSize, lineHeight) {
+function makePageSvg(pageLines, width, height, fontSize, lineHeight, textColor = '#ffffff') {
   const totalTextHeight = pageLines.length * lineHeight;
   const startY = (height - totalTextHeight) / 2 + fontSize;
 
@@ -54,7 +54,7 @@ function makePageSvg(pageLines, width, height, fontSize, lineHeight) {
     const y = startY + i * lineHeight;
     return `<text x="${width / 2}" y="${y}" text-anchor="middle"
       font-family="NanumGothic, Noto Sans KR, Apple SD Gothic Neo, sans-serif"
-      font-size="${fontSize}" font-weight="bold" fill="white"
+      font-size="${fontSize}" font-weight="bold" fill="${textColor}"
       stroke="black" stroke-width="${Math.round(fontSize * 0.15)}" paint-order="stroke"
       filter="url(#shadow)">${escapeXml(line)}</text>`;
   }).join('\n');
@@ -69,7 +69,7 @@ function makePageSvg(pageLines, width, height, fontSize, lineHeight) {
 </svg>`;
 }
 
-async function createTextOverlay(width, height, koreanText, englishText, outputPath) {
+async function createTextOverlay(width, height, koreanText, englishText, outputPath, textColor = '#ffffff') {
   const safeKorean = escapeXml(koreanText);
   const safeEnglish = escapeXml(englishText);
 
@@ -87,7 +87,7 @@ async function createTextOverlay(width, height, koreanText, englishText, outputP
     font-family="NanumGothic, Noto Sans KR, Apple SD Gothic Neo, sans-serif"
     font-size="${Math.round(width * 0.055)}"
     font-weight="bold"
-    fill="white"
+    fill="${textColor}"
     stroke="black" stroke-width="${Math.round(width * 0.055 * 0.15)}" paint-order="stroke"
     filter="url(#shadow)"
   >${safeKorean}</text>
@@ -177,6 +177,7 @@ export async function renderVideo(config) {
   const height = parseInt(process.env.VIDEO_HEIGHT || '1920', 10);
   const fps = parseInt(process.env.VIDEO_FPS || '30', 10);
   const bgColor = style.bgColor || process.env.BG_COLOR || '#1a1a2e';
+  const textColor = style.textColor || '#ffffff';
 
   const dir = path.dirname(outputPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -189,7 +190,7 @@ export async function renderVideo(config) {
   await prepareBackground(width, height, backgroundImage || bgColor, bgImagePath);
 
   if (animate === 'scroll' && koreanText) {
-    return renderPageByPage(dir, bgImagePath, koreanText, audioPath, outputPath, width, height, fps, totalDuration);
+    return renderPageByPage(dir, bgImagePath, koreanText, audioPath, outputPath, width, height, fps, totalDuration, textColor);
   }
 
   const textOverlayPath = path.join(dir, '_text.png');
@@ -200,7 +201,7 @@ export async function renderVideo(config) {
     await sharp(bgImagePath).jpeg({ quality: 90 }).toFile(composedFramePath);
   } else {
     console.log(`[Render] Creating text overlay...`);
-    await createTextOverlay(width, height, koreanText, englishText, textOverlayPath);
+    await createTextOverlay(width, height, koreanText, englishText, textOverlayPath, textColor);
     console.log(`[Render] Composing frame...`);
     await sharp(bgImagePath)
       .composite([{ input: textOverlayPath }])
@@ -231,7 +232,7 @@ export async function renderVideo(config) {
   return runFfmpeg(cmd, cleanup, outputPath);
 }
 
-async function renderPageByPage(dir, bgImagePath, text, audioPath, outputPath, width, height, fps, totalDuration) {
+async function renderPageByPage(dir, bgImagePath, text, audioPath, outputPath, width, height, fps, totalDuration, textColor = '#ffffff') {
   const fontSize = Math.max(16, Math.round(width * 0.055));
   const lineHeight = Math.round(fontSize * 1.8);
   const padding = Math.round(width * 0.08);
@@ -252,7 +253,7 @@ async function renderPageByPage(dir, bgImagePath, text, audioPath, outputPath, w
   const frameFiles = [];
   for (let p = 0; p < pages.length; p++) {
     const framePath = path.join(dir, `_page_${p}.jpg`);
-    const svg = makePageSvg(pages[p], width, height, fontSize, lineHeight);
+    const svg = makePageSvg(pages[p], width, height, fontSize, lineHeight, textColor);
     const overlayBuf = await sharp(Buffer.from(svg)).png().toBuffer();
     await sharp(bgImagePath)
       .composite([{ input: overlayBuf }])

@@ -370,6 +370,18 @@
       color: var(--text-dim);
       margin-left: auto;
     }
+
+    .color-preset {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.1s;
+    }
+
+    .color-preset:hover { transform: scale(1.1); }
+    .color-preset.active { border-color: var(--accent); }
   </style>
 </head>
 <body>
@@ -406,6 +418,21 @@
             <div>
               <label for="englishText">Display English</label>
               <input type="text" id="englishText" placeholder="Glass Noodles">
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="textColor">Text Color</label>
+          <div class="row" style="align-items:center">
+            <input type="color" id="textColor" value="#ffffff" style="width:48px;height:36px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;cursor:pointer">
+            <div style="display:flex;gap:6px;flex:1">
+              <button class="color-preset" data-color="#ffffff" style="background:#ffffff" title="White"></button>
+              <button class="color-preset" data-color="#ffff00" style="background:#ffff00" title="Yellow"></button>
+              <button class="color-preset" data-color="#00ffff" style="background:#00ffff" title="Cyan"></button>
+              <button class="color-preset" data-color="#ff6b6b" style="background:#ff6b6b" title="Red"></button>
+              <button class="color-preset" data-color="#51cf66" style="background:#51cf66" title="Green"></button>
+              <button class="color-preset" data-color="#ffd43b" style="background:#ffd43b" title="Gold"></button>
             </div>
           </div>
         </div>
@@ -543,6 +570,15 @@
     reader.readAsDataURL(file);
   });
 
+  // Color presets
+  document.querySelectorAll('.color-preset').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.color-preset').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      $('#textColor').value = btn.dataset.color;
+    });
+  });
+
   // Scroll toggle — hide display text fields when scroll is on
   $('#scrollToggle').addEventListener('change', () => {
     $('#displayTextRow').style.display = $('#scrollToggle').checked ? 'none' : 'block';
@@ -594,6 +630,8 @@
     formData.append('englishText', $('#englishText').value.trim());
     formData.append('voice', $('#voice').value);
     formData.append('rate', $('#rate').value);
+
+    formData.append('textColor', $('#textColor').value);
 
     if ($('#scrollToggle').checked) {
       formData.append('animate', 'scroll');
