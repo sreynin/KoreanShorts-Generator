@@ -137,7 +137,7 @@ export async function renderVideo(config) {
 
   if (skipTextOverlay) {
     console.log(`[Render] Using image as-is (text already included)`);
-    fs.copyFileSync(bgImagePath, composedFramePath);
+    await sharp(bgImagePath).png().toFile(composedFramePath);
   } else {
     console.log(`[Render] Creating text overlay...`);
     await createTextOverlay(width, height, koreanText, englishText, textOverlayPath);
@@ -165,12 +165,13 @@ export async function renderVideo(config) {
       .outputOptions([
         '-t', String(totalDuration),
         '-c:v', 'libx264',
-        '-preset', 'medium',
-        '-crf', '23',
+        '-preset', 'ultrafast',
+        '-crf', '28',
         '-c:a', 'aac',
-        '-b:a', '192k',
-        '-r', String(fps),
+        '-b:a', '128k',
+        '-r', '24',
         '-pix_fmt', 'yuv420p',
+        '-threads', '1',
         '-movflags', '+faststart',
       ])
       .output(outputPath)
