@@ -69,6 +69,8 @@ app.post('/api/generate', upload.single('image'), async (req, res) => {
 
     if (!ttsText) return res.status(400).json({ error: 'ttsText is required' });
 
+    console.log(`[Generate] voice=${voice}, rate=${rate}, bgSource=${bgSource}`);
+
     currentJob = { status: 'starting', progress: 0 };
     res.json({ status: 'started' });
 

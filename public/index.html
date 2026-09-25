@@ -590,6 +590,7 @@
   });
 
   function pollStatus() {
+    let idleCount = 0;
     const interval = setInterval(async () => {
       try {
         const res = await fetch('/api/status');
@@ -597,6 +598,19 @@
 
         $('#progressFill').style.width = (data.progress || 0) + '%';
         $('#progressStatus').textContent = STATUS_LABELS[data.status] || data.status;
+
+        if (data.status === 'idle') {
+          idleCount++;
+          if (idleCount > 5) {
+            clearInterval(interval);
+            $('#progressOverlay').classList.remove('active');
+            $('#generateBtn').disabled = false;
+            alert('Generation failed. Check server logs for details.');
+          }
+          return;
+        }
+
+        idleCount = 0;
 
         if (data.status === 'done') {
           clearInterval(interval);
@@ -618,13 +632,13 @@
           clearInterval(interval);
           $('#progressOverlay').classList.remove('active');
           $('#generateBtn').disabled = false;
-          alert('Error: ' + data.error);
+          alert('Error: ' + (data.error || 'Unknown error'));
           fetch('/api/reset', { method: 'POST' });
         }
       } catch {
         // ignore transient fetch errors
       }
-    }, 800);
+    }, 1500);
   }
 
   async function loadVideos() {
