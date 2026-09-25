@@ -131,13 +131,13 @@ export async function renderVideo(config) {
 
   const bgImagePath = path.join(dir, '_bg.png');
   const textOverlayPath = path.join(dir, '_text.png');
-  const composedFramePath = path.join(dir, '_frame.png');
+  const composedFramePath = path.join(dir, '_frame.jpg');
 
   await prepareBackground(width, height, backgroundImage || bgColor, bgImagePath);
 
   if (skipTextOverlay) {
     console.log(`[Render] Using image as-is (text already included)`);
-    await sharp(bgImagePath).png().toFile(composedFramePath);
+    await sharp(bgImagePath).jpeg({ quality: 90 }).toFile(composedFramePath);
   } else {
     console.log(`[Render] Creating text overlay...`);
     await createTextOverlay(width, height, koreanText, englishText, textOverlayPath);
@@ -145,7 +145,7 @@ export async function renderVideo(config) {
     console.log(`[Render] Composing frame...`);
     await sharp(bgImagePath)
       .composite([{ input: textOverlayPath }])
-      .png()
+      .jpeg({ quality: 90 })
       .toFile(composedFramePath);
   }
 
