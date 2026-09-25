@@ -1,11 +1,21 @@
-import { execFile } from 'node:child_process';
+import { execFile, execSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import path from 'node:path';
 import fs from 'node:fs';
 
 const execFileAsync = promisify(execFile);
 
-const EDGE_TTS_BIN = '/Users/sreinin/Library/Python/3.9/bin/edge-tts';
+function findEdgeTts() {
+  try {
+    return execSync('which edge-tts', { encoding: 'utf-8' }).trim();
+  } catch {
+    const fallback = '/Users/sreinin/Library/Python/3.9/bin/edge-tts';
+    if (fs.existsSync(fallback)) return fallback;
+    throw new Error('edge-tts not found. Install with: pip3 install edge-tts');
+  }
+}
+
+const EDGE_TTS_BIN = findEdgeTts();
 
 /**
  * @param {string} text - Korean text to synthesize

@@ -88,12 +88,17 @@ Edit the `SAMPLE_PHRASES` array in `index.js` to change the content.
 |-------|--------|
 | ko-KR-SunHiNeural | Female |
 | ko-KR-InJoonNeural | Male |
-| ko-KR-BongJinNeural | Male |
-| ko-KR-GookMinNeural | Male |
-| ko-KR-JiMinNeural | Female |
-| ko-KR-SeoHyeonNeural | Female |
-| ko-KR-SoonBokNeural | Female |
-| ko-KR-YuJinNeural | Female |
+| ko-KR-HyunsuMultilingualNeural | Male |
+
+## Deploy to Render
+
+1. Push this repo to GitHub
+2. Go to [render.com/new](https://render.com/new) and connect your GitHub repo
+3. Select **Web Service** and choose **Docker** runtime
+4. Add environment variable: `PEXELS_API_KEY` = your key
+5. Click **Create Web Service**
+
+Or use the blueprint: click **New** > **Blueprint** and point to this repo — it reads `render.yaml` automatically.
 
 ## Project Structure
 

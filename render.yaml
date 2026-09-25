@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: korean-shorts-generator
+    runtime: docker
+    plan: free
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: TTS_VOICE
+        value: ko-KR-SunHiNeural
+      - key: TTS_RATE
+        value: "+0%"
+      - key: TTS_VOLUME
+        value: "+0%"
+      - key: VIDEO_WIDTH
+        value: "1080"
+      - key: VIDEO_HEIGHT
+        value: "1920"
+      - key: VIDEO_FPS
+        value: "30"
+      - key: BG_COLOR
+        value: "#1a1a2e"
+      - key: PEXELS_API_KEY
+        sync: false

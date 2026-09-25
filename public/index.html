@@ -323,6 +323,23 @@
     .video-item a:hover { text-decoration: underline; }
 
     .video-meta { color: var(--text-dim); }
+
+    .btn-download {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      text-align: center;
+      background: var(--success);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .btn-download:hover { opacity: 0.85; }
   </style>
 </head>
 <body>
@@ -434,6 +451,7 @@
             <div>Your video will appear here</div>
           </div>
         </div>
+        <a class="btn btn-download" id="downloadBtn" style="display:none" download>Download Video</a>
       </div>
     </div>
   </div>
@@ -587,6 +605,11 @@
 
           // Show video in preview
           $('#phoneFrame').innerHTML = `<video src="${data.videoUrl}" controls autoplay></video>`;
+
+          // Show download button
+          const dlBtn = $('#downloadBtn');
+          dlBtn.href = data.videoUrl;
+          dlBtn.style.display = 'block';
 
           // Reset job
           fetch('/api/reset', { method: 'POST' });
