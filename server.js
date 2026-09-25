@@ -34,12 +34,7 @@ app.get('/api/voices', (_req, res) => {
   res.json([
     { id: 'ko-KR-SunHiNeural', name: 'SunHi (여성)' },
     { id: 'ko-KR-InJoonNeural', name: 'InJoon (남성)' },
-    { id: 'ko-KR-BongJinNeural', name: 'BongJin (남성)' },
-    { id: 'ko-KR-GookMinNeural', name: 'GookMin (남성)' },
-    { id: 'ko-KR-JiMinNeural', name: 'JiMin (여성)' },
-    { id: 'ko-KR-SeoHyeonNeural', name: 'SeoHyeon (여성)' },
-    { id: 'ko-KR-SoonBokNeural', name: 'SoonBok (여성)' },
-    { id: 'ko-KR-YuJinNeural', name: 'YuJin (여성)' },
+    { id: 'ko-KR-HyunsuMultilingualNeural', name: 'Hyunsu (남성)' },
   ]);
 });
 
