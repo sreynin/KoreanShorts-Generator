@@ -65,7 +65,7 @@ app.post('/api/generate', upload.single('image'), async (req, res) => {
   }
 
   try {
-    const { ttsText, koreanText, englishText, voice, rate, bgSource, pexelsQuery } = req.body;
+    const { ttsText, koreanText, englishText, voice, rate, bgSource, pexelsQuery, animate } = req.body;
 
     if (!ttsText) return res.status(400).json({ error: 'ttsText is required' });
 
@@ -99,10 +99,11 @@ app.post('/api/generate', upload.single('image'), async (req, res) => {
     await renderVideo({
       audioPath,
       outputPath: videoPath,
-      koreanText: koreanText || '',
+      koreanText: animate === 'scroll' ? ttsText : (koreanText || ''),
       englishText: englishText || '',
       backgroundImage: bgImagePath,
-      skipTextOverlay,
+      skipTextOverlay: animate === 'scroll' ? false : skipTextOverlay,
+      animate: animate || 'none',
     });
 
     currentJob = {

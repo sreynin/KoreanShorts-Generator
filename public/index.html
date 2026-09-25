@@ -340,6 +340,36 @@
     }
 
     .btn-download:hover { opacity: 0.85; }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 12px;
+      background: var(--surface2);
+      border-radius: 8px;
+    }
+
+    .toggle-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .toggle-row label {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .toggle-row .hint {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-left: auto;
+    }
   </style>
 </head>
 <body>
@@ -361,7 +391,13 @@
           <textarea id="ttsText" placeholder="잡채는 고구마 전분으로 만든 쫄깃하고 투명한 당면을..."></textarea>
         </div>
 
-        <div class="field">
+        <div class="toggle-row">
+          <input type="checkbox" id="scrollToggle">
+          <label for="scrollToggle">Scroll text animation</label>
+          <span class="hint">Script scrolls bottom to top</span>
+        </div>
+
+        <div class="field" id="displayTextRow">
           <div class="row">
             <div>
               <label for="koreanText">Display Korean</label>
@@ -507,6 +543,11 @@
     reader.readAsDataURL(file);
   });
 
+  // Scroll toggle — hide display text fields when scroll is on
+  $('#scrollToggle').addEventListener('change', () => {
+    $('#displayTextRow').style.display = $('#scrollToggle').checked ? 'none' : 'block';
+  });
+
   // Pexels search
   $('#pexelsSearchBtn').addEventListener('click', async () => {
     const query = $('#pexelsQuery').value.trim();
@@ -553,6 +594,10 @@
     formData.append('englishText', $('#englishText').value.trim());
     formData.append('voice', $('#voice').value);
     formData.append('rate', $('#rate').value);
+
+    if ($('#scrollToggle').checked) {
+      formData.append('animate', 'scroll');
+    }
 
     const activeTab = document.querySelector('.bg-tab.active').dataset.tab;
 
