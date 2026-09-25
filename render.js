@@ -37,7 +37,7 @@ async function createTextOverlay(width, height, koreanText, englishText, outputP
     text-anchor="middle"
     dominant-baseline="middle"
     font-family="Apple SD Gothic Neo, Noto Sans KR, sans-serif"
-    font-size="60"
+    font-size="${Math.round(width * 0.055)}"
     font-weight="bold"
     fill="white"
     filter="url(#shadow)"
@@ -47,7 +47,7 @@ async function createTextOverlay(width, height, koreanText, englishText, outputP
     text-anchor="middle"
     dominant-baseline="middle"
     font-family="Helvetica Neue, Arial, sans-serif"
-    font-size="36"
+    font-size="${Math.round(width * 0.033)}"
     fill="#cccccc"
     filter="url(#shadow)"
   >${safeEnglish}</text>
@@ -160,8 +160,8 @@ export async function renderVideo(config) {
 
     const timeout = setTimeout(() => {
       cleanup();
-      reject(new Error('FFmpeg timed out after 120s'));
-    }, 120_000);
+      reject(new Error('FFmpeg timed out after 180s'));
+    }, 180_000);
 
     ffmpeg()
       .input(composedFramePath)
@@ -171,9 +171,10 @@ export async function renderVideo(config) {
         '-t', String(totalDuration),
         '-c:v', 'libx264',
         '-preset', 'ultrafast',
-        '-crf', '28',
+        '-tune', 'stillimage',
+        '-crf', '32',
         '-c:a', 'aac',
-        '-b:a', '128k',
+        '-b:a', '96k',
         '-r', String(fps),
         '-pix_fmt', 'yuv420p',
         '-threads', '1',
