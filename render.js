@@ -156,16 +156,12 @@ export async function renderVideo(config) {
   };
 
   return new Promise((resolve, reject) => {
-    console.log(`[Render] Encoding video...`);
+    console.log(`[Render] Encoding video (${width}x${height} @ ${fps}fps, ${totalDuration.toFixed(1)}s)...`);
 
-    const timeout = setTimeout(() => {
-      cleanup();
-      reject(new Error('FFmpeg timed out after 180s'));
-    }, 180_000);
-
-    ffmpeg()
+    let settled = false;
+    const cmd = ffmpeg()
       .input(composedFramePath)
-      .inputOptions(['-loop', '1'])
+      .inputOptions(['-loop', '1', '-framerate', '2'])
       .input(audioPath)
       .outputOptions([
         '-t', String(totalDuration),
@@ -182,22 +178,31 @@ export async function renderVideo(config) {
       ])
       .output(outputPath)
       .on('start', () => console.log(`[Render] FFmpeg started`))
-      .on('progress', (progress) => {
-        if (progress.percent) {
-          process.stdout.write(`\r[Render] Progress: ${progress.percent.toFixed(1)}%`);
-        }
-      })
       .on('end', () => {
-        clearTimeout(timeout);
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
         cleanup();
         console.log(`\n[Render] Video saved: ${outputPath}`);
         resolve(outputPath);
       })
       .on('error', (err) => {
-        clearTimeout(timeout);
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
         cleanup();
         reject(new Error(`FFmpeg error: ${err.message}`));
-      })
-      .run();
+      });
+
+    cmd.run();
+
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      console.log(`\n[Render] FFmpeg timeout — killing process`);
+      cmd.kill('SIGKILL');
+      cleanup();
+      reject(new Error('FFmpeg timed out after 180s'));
+    }, 180_000);
   });
 }
