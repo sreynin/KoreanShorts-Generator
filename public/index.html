@@ -559,7 +559,10 @@
     $('#progressStatus').textContent = 'Starting...';
 
     try {
-      await fetch('/api/generate', { method: 'POST', body: formData });
+      await fetch('/api/reset', { method: 'POST' });
+      const resp = await fetch('/api/generate', { method: 'POST', body: formData });
+      const result = await resp.json();
+      if (result.error) throw new Error(result.error);
       pollStatus();
     } catch (err) {
       alert('Failed to start: ' + err.message);

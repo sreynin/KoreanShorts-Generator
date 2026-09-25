@@ -65,7 +65,7 @@ app.post('/api/search-image', async (req, res) => {
 let currentJob = null;
 
 app.post('/api/generate', upload.single('image'), async (req, res) => {
-  if (currentJob) {
+  if (currentJob && !['done', 'error', 'idle'].includes(currentJob.status)) {
     return res.status(409).json({ error: 'A video is already being generated' });
   }
 
