@@ -55,6 +55,7 @@ function makePageSvg(pageLines, width, height, fontSize, lineHeight) {
     return `<text x="${width / 2}" y="${y}" text-anchor="middle"
       font-family="NanumGothic, Noto Sans KR, Apple SD Gothic Neo, sans-serif"
       font-size="${fontSize}" font-weight="bold" fill="white"
+      stroke="black" stroke-width="${Math.round(fontSize * 0.15)}" paint-order="stroke"
       filter="url(#shadow)">${escapeXml(line)}</text>`;
   }).join('\n');
 
@@ -87,6 +88,7 @@ async function createTextOverlay(width, height, koreanText, englishText, outputP
     font-size="${Math.round(width * 0.055)}"
     font-weight="bold"
     fill="white"
+    stroke="black" stroke-width="${Math.round(width * 0.055 * 0.15)}" paint-order="stroke"
     filter="url(#shadow)"
   >${safeKorean}</text>
   <text
@@ -96,6 +98,7 @@ async function createTextOverlay(width, height, koreanText, englishText, outputP
     font-family="Helvetica Neue, Arial, sans-serif"
     font-size="${Math.round(width * 0.033)}"
     fill="#cccccc"
+    stroke="black" stroke-width="${Math.round(width * 0.033 * 0.15)}" paint-order="stroke"
     filter="url(#shadow)"
   >${safeEnglish}</text>
 </svg>`;
