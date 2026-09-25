@@ -80,7 +80,7 @@ async function prepareBackground(width, height, source, outputPath) {
     console.log(`[Render] Using background image: ${source}`);
     await sharp(source)
       .resize(width, height, { fit: 'cover', position: 'centre' })
-      .png()
+      .jpeg({ quality: 85 })
       .toFile(outputPath);
   } else {
     const hexColor = source || '#1a1a2e';
@@ -90,7 +90,7 @@ async function prepareBackground(width, height, source, outputPath) {
     const b = parseInt(hexColor.slice(5, 7), 16);
     await sharp({
       create: { width, height, channels: 3, background: { r, g, b } },
-    }).png().toFile(outputPath);
+    }).jpeg({ quality: 85 }).toFile(outputPath);
   }
 }
 
@@ -129,7 +129,7 @@ export async function renderVideo(config) {
   const totalDuration = duration + 1.0;
   console.log(`[Render] Audio duration: ${duration.toFixed(2)}s, video will be ${totalDuration.toFixed(2)}s`);
 
-  const bgImagePath = path.join(dir, '_bg.png');
+  const bgImagePath = path.join(dir, '_bg.jpg');
   const textOverlayPath = path.join(dir, '_text.png');
   const composedFramePath = path.join(dir, '_frame.jpg');
 
@@ -158,6 +158,11 @@ export async function renderVideo(config) {
   return new Promise((resolve, reject) => {
     console.log(`[Render] Encoding video...`);
 
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error('FFmpeg timed out after 120s'));
+    }, 120_000);
+
     ffmpeg()
       .input(composedFramePath)
       .inputOptions(['-loop', '1'])
@@ -169,7 +174,7 @@ export async function renderVideo(config) {
         '-crf', '28',
         '-c:a', 'aac',
         '-b:a', '128k',
-        '-r', '24',
+        '-r', String(fps),
         '-pix_fmt', 'yuv420p',
         '-threads', '1',
         '-movflags', '+faststart',
@@ -182,11 +187,13 @@ export async function renderVideo(config) {
         }
       })
       .on('end', () => {
+        clearTimeout(timeout);
         cleanup();
         console.log(`\n[Render] Video saved: ${outputPath}`);
         resolve(outputPath);
       })
       .on('error', (err) => {
+        clearTimeout(timeout);
         cleanup();
         reject(new Error(`FFmpeg error: ${err.message}`));
       })
