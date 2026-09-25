@@ -1,0 +1,28 @@
+{
+  "name": "koreanshorts-generator",
+  "version": "1.0.0",
+  "description": "Generate 9:16 YouTube Shorts with Korean voiceover and animated text overlays",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "cli": "node index.js",
+    "test": "node index.js"
+  },
+  "keywords": [
+    "youtube-shorts",
+    "korean",
+    "tts",
+    "video-generation"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^18.0.3",
+    "edge-tts": "^1.0.1",
+    "express": "^5.2.1",
+    "fluent-ffmpeg": "^2.1.3",
+    "multer": "^2.4.0",
+    "sharp": "^0.35.4"
+  }
+}
